@@ -34,11 +34,18 @@ public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
 
 		fillValIfNullByName("createTime", now, metaObject, true);
 		fillValIfNullByName("updateTime", now, metaObject, true);
+		// 支持 gmt_create 和 gmt_modified 字段
+		fillValIfNullByName("gmtCreate", now, metaObject, true);
+		fillValIfNullByName("gmtModified", now, metaObject, true);
 		fillValIfNullByName("createBy", getUserName(), metaObject, true);
 		fillValIfNullByName("updateBy", getUserName(), metaObject, true);
 
 		// 删除标记自动填充
 		fillValIfNullByName("delFlag", CommonConstants.STATUS_NORMAL, metaObject, true);
+		// 支持 deleted 字段（逻辑删除，0为未删除）
+		fillValIfNullByName("deleted", 0, metaObject, true);
+		// 商品状态默认填充为待审核
+		fillValIfNullByName("state", "PENDING", metaObject, true);
 	}
 
 	/**
@@ -48,7 +55,10 @@ public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
 	@Override
 	public void updateFill(MetaObject metaObject) {
 		log.debug("mybatis plus start update fill ....");
-		fillValIfNullByName("updateTime", LocalDateTime.now(), metaObject, true);
+		LocalDateTime now = LocalDateTime.now();
+		fillValIfNullByName("updateTime", now, metaObject, true);
+		// 支持 gmt_modified 字段
+		fillValIfNullByName("gmtModified", now, metaObject, true);
 		fillValIfNullByName("updateBy", getUserName(), metaObject, true);
 	}
 

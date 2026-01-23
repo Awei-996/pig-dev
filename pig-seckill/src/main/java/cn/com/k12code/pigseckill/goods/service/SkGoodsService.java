@@ -1,0 +1,83 @@
+package cn.com.k12code.pigseckill.goods.service;
+
+import cn.com.k12code.pigseckill.goods.dto.SkGoodsDTO;
+import cn.com.k12code.pigseckill.goods.entity.SkGoods;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
+
+/**
+ * 商品服务接口
+ *
+ * @author carl
+ * @date 2025/01/23
+ */
+public interface SkGoodsService extends IService<SkGoods> {
+
+	/**
+	 * 分页查询商品信息
+	 * @param page 分页对象
+	 * @param skGoodsDTO 商品查询条件
+	 * @return 分页结果
+	 */
+	IPage<SkGoods> getGoodsPage(Page<SkGoods> page, SkGoodsDTO skGoodsDTO);
+
+	/**
+	 * 查询商品列表
+	 * @param skGoodsDTO 商品查询条件
+	 * @return 商品列表
+	 */
+	List<SkGoods> listGoods(SkGoodsDTO skGoodsDTO);
+
+	/**
+	 * 根据ID查询商品详情
+	 * @param id 商品ID
+	 * @return 商品信息
+	 */
+	SkGoods getGoodsById(Long id);
+
+	/**
+	 * 保存商品信息
+	 * @param skGoods 商品实体
+	 * @return 是否保存成功
+	 */
+	Boolean saveGoods(SkGoods skGoods);
+
+	/**
+	 * 更新商品信息
+	 * @param skGoods 商品实体
+	 * @return 是否更新成功
+	 */
+	Boolean updateGoods(SkGoods skGoods);
+
+	/**
+	 * 根据ID删除商品（逻辑删除）
+	 * @param id 商品ID
+	 * @return 是否删除成功
+	 */
+	Boolean removeGoodsById(Long id);
+
+	/**
+	 * 批量删除商品（逻辑删除）
+	 * @param ids 商品ID列表
+	 * @return 是否删除成功
+	 */
+	Boolean removeGoodsByIds(List<Long> ids);
+
+	/**
+	 * 审核通过商品
+	 * @param id 商品ID
+	 * @return 是否审核成功
+	 */
+	Boolean approveGoods(Long id);
+
+	/**
+	 * 驳回商品
+	 * @param id 商品ID
+	 * @return 是否驳回成功
+	 */
+	Boolean rejectGoods(Long id);
+
+}
