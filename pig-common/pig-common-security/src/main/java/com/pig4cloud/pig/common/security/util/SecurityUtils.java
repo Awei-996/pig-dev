@@ -17,6 +17,8 @@
 package com.pig4cloud.pig.common.security.util;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.AES;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.security.service.PigUser;
 import lombok.experimental.UtilityClass;
@@ -86,6 +88,40 @@ public class SecurityUtils {
 				roleIds.add(Long.parseLong(id));
 			});
 		return roleIds;
+	}
+
+	/**
+	 * AES加密
+	 * @param data 待加密的数据
+	 * @param key 加密密钥，必须是16位、24位或32位
+	 * @return 加密后的Base64字符串
+	 */
+	public String encrypt(String data, String key) {
+		if (StrUtil.isBlank(data)) {
+			return null;
+		}
+		if (StrUtil.isBlank(key)) {
+			throw new IllegalArgumentException("加密密钥不能为空");
+		}
+		AES aes = SecureUtil.aes(key.getBytes());
+		return aes.encryptBase64(data);
+	}
+
+	/**
+	 * AES解密
+	 * @param encryptedData 加密后的Base64字符串
+	 * @param key 解密密钥，必须是16位、24位或32位，与加密时使用的密钥相同
+	 * @return 解密后的原始数据
+	 */
+	public String decrypt(String encryptedData, String key) {
+		if (StrUtil.isBlank(encryptedData)) {
+			return null;
+		}
+		if (StrUtil.isBlank(key)) {
+			throw new IllegalArgumentException("解密密钥不能为空");
+		}
+		AES aes = SecureUtil.aes(key.getBytes());
+		return aes.decryptStr(encryptedData);
 	}
 
 }

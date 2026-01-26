@@ -64,4 +64,9 @@ public interface CacheConstants {
 	 */
 	String PARAMS_DETAILS = "params_details";
 
+	/**
+	 * key分隔符
+	 */
+	String CACHE_KEY_SEPARATOR = ":";
+
 }
