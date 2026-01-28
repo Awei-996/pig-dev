@@ -69,4 +69,19 @@ public interface CacheConstants {
 	 */
 	String CACHE_KEY_SEPARATOR = ":";
 
+	/**
+	 * value分隔符
+	 */
+	String CACHE_VALUE_HYPHEN = "-";
+
+	/**
+	 * 订单放重复提交前缀
+	 */
+	 String TOKEN_PREFIX = "token:";
+
+	/**
+	 * 加密key
+	 */
+	String ENCRYPT_KEY = "carlcarl12345678";
+
 }

@@ -137,6 +137,18 @@ public class RedisUtils {
 	}
 
 	/**
+	 * 获取数据并删除key
+	 */
+	public Object getAndDelete(String key) {
+		RedisTemplate<String, Object> redisTemplate = SpringContextHolder.getBean(RedisTemplate.class);
+		if (key != null) {
+			// 获取并删除，替代原来的使用lua脚本来保证原子行，6.2以上的版本支持
+			return redisTemplate.opsForValue().getAndDelete(key);
+		}
+		return null;
+	}
+
+	/**
 	 * 获取锁
 	 * @param lockKey 锁key
 	 * @param value value

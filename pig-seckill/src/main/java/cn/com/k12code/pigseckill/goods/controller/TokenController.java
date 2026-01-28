@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.pig4cloud.pig.common.core.constant.CacheConstants.CACHE_KEY_SEPARATOR;
+import static com.pig4cloud.pig.common.core.constant.CacheConstants.*;
 
 /**
  * 防重提交Token控制器
@@ -38,8 +38,6 @@ import static com.pig4cloud.pig.common.core.constant.CacheConstants.CACHE_KEY_SE
 public class TokenController {
 
 	private final SkGoodsService skGoodsService;
-
-	private static final String TOKEN_PREFIX = "token:";
 
 	/**
 	 * 生成防重提交token
@@ -66,12 +64,14 @@ public class TokenController {
 				if (skGoods == null || !skGoods.getState().equals(GoodsStateEnum.ON_SALE.getCode())) {
 					throw new RuntimeException("当前商品不可用");
 				}
-				// 组成key token:buy:29
+				// 组成key token:nft:29
 				Long userId = SecurityUtils.getUser().getId();
 				String tokenKey = TOKEN_PREFIX + scene + CACHE_KEY_SEPARATOR + key + CACHE_KEY_SEPARATOR + userId;
 				// value
 				String uuid = UUID.randomUUID().toString().replace("-", "");
-				String value = SecurityUtils.encrypt(uuid, tokenKey);
+				// 同时把key存到value, 因为后续拦截器用的到
+				String tokenValue = tokenKey + CACHE_VALUE_HYPHEN + uuid;
+				String value = SecurityUtils.encrypt(tokenValue, ENCRYPT_KEY);
 				// 设置缓存
 				RedisUtils.set(tokenKey, value, 10, TimeUnit.MINUTES);
 
