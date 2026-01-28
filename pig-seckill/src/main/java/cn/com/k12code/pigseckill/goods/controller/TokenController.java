@@ -73,7 +73,7 @@ public class TokenController {
 				String tokenValue = tokenKey + CACHE_VALUE_HYPHEN + uuid;
 				String value = SecurityUtils.encrypt(tokenValue, ENCRYPT_KEY);
 				// 设置缓存
-				RedisUtils.set(tokenKey, value, 10, TimeUnit.MINUTES);
+				RedisUtils.set(tokenKey, value, 30, TimeUnit.MINUTES);
 
 				return R.ok(value);
 			}

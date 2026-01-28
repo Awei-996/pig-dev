@@ -32,21 +32,7 @@ public class SeckillWebMvcConfiguration implements WebMvcConfigurer {
 			.addPathPatterns("/**")
 			.excludePathPatterns(
 				// 排除生成token的接口
-				"/goods/token/**",
-				// 排除静态资源
-				"/**/*.html",
-				"/**/*.js",
-				"/**/*.css",
-				"/**/*.ico",
-				"/**/*.png",
-				"/**/*.jpg",
-				"/**/*.gif",
-				// 排除Swagger相关
-				"/v3/api-docs/**",
-				"/swagger-ui/**",
-				"/doc.html",
-				// 排除健康检查
-				"/actuator/**"
+				"/goods/token/**"
 			)
 			.order(Ordered.HIGHEST_PRECEDENCE + 1);
 	}
