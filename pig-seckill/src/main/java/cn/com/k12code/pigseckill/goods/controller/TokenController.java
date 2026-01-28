@@ -42,14 +42,14 @@ public class TokenController {
 	/**
 	 * 生成防重提交token
 	 * @param scene 场景标识（如：茅台、nft等）
-	 * @param key 业务唯一标识（如：商品ID、用户ID等）
+	 * @param key 业务唯一标识（如：商品ID等）
 	 * @return token
 	 */
 	@GetMapping("/get")
 	@Operation(summary = "获取防重提交token", description = "生成防重提交token，用于防止重复提交")
 	public R<String> getToken(
 			@NotBlank(message = "场景标识不能为空") @RequestParam String scene,
-			@NotBlank(message = "业务标识不能为空") @RequestParam Long key) {
+			@NotBlank(message = "业务标识不能为空") @RequestParam String key) {
 		try {
 			// 判断是否属于定义的商品类型防止假商品刷token
 			Arrays.stream(GoodsTypeEnum.values())

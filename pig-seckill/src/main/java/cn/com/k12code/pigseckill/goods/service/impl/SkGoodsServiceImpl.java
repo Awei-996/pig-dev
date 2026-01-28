@@ -55,7 +55,7 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 * @return 商品信息
 	 */
 	@Override
-	public SkGoods getGoodsById(Long id) {
+	public SkGoods getGoodsById(String id) {
 		return baseMapper.selectById(id);
 	}
 
@@ -95,7 +95,7 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public Boolean removeGoodsById(Long id) {
+	public Boolean removeGoodsById(String id) {
 		return removeById(id);
 	}
 
@@ -106,7 +106,7 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public Boolean removeGoodsByIds(List<Long> ids) {
+	public Boolean removeGoodsByIds(List<String> ids) {
 		return removeByIds(ids);
 	}
 
@@ -117,7 +117,7 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public Boolean approveGoods(Long id) {
+	public Boolean approveGoods(String id) {
 		SkGoods goods = baseMapper.selectById(id);
 		if (goods == null) {
 			return false;
@@ -133,7 +133,7 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public Boolean rejectGoods(Long id) {
+	public Boolean rejectGoods(String id) {
 		SkGoods goods = baseMapper.selectById(id);
 		if (goods == null) {
 			return false;
@@ -224,6 +224,16 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 			}
 			if (skGoodsDTO.getBookEndTime()[1] != null) {
 				wrapper.le(SkGoods::getBookEndTime, skGoodsDTO.getBookEndTime()[1]);
+			}
+		}
+
+		// 结束时间范围
+		if (skGoodsDTO.getEndTime() != null && skGoodsDTO.getEndTime().length == 2) {
+			if (skGoodsDTO.getEndTime()[0] != null) {
+				wrapper.ge(SkGoods::getEndTime, skGoodsDTO.getEndTime()[0]);
+			}
+			if (skGoodsDTO.getEndTime()[1] != null) {
+				wrapper.le(SkGoods::getEndTime, skGoodsDTO.getEndTime()[1]);
 			}
 		}
 

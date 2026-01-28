@@ -36,7 +36,7 @@ public interface SkGoodsService extends IService<SkGoods> {
 	 * @param id 商品ID
 	 * @return 商品信息
 	 */
-	SkGoods getGoodsById(Long id);
+	SkGoods getGoodsById(String id);
 
 	/**
 	 * 保存商品信息
@@ -57,27 +57,27 @@ public interface SkGoodsService extends IService<SkGoods> {
 	 * @param id 商品ID
 	 * @return 是否删除成功
 	 */
-	Boolean removeGoodsById(Long id);
+	Boolean removeGoodsById(String id);
 
 	/**
 	 * 批量删除商品（逻辑删除）
 	 * @param ids 商品ID列表
 	 * @return 是否删除成功
 	 */
-	Boolean removeGoodsByIds(List<Long> ids);
+	Boolean removeGoodsByIds(List<String> ids);
 
 	/**
 	 * 审核通过商品
 	 * @param id 商品ID
 	 * @return 是否审核成功
 	 */
-	Boolean approveGoods(Long id);
+	Boolean approveGoods(String id);
 
 	/**
 	 * 驳回商品
 	 * @param id 商品ID
 	 * @return 是否驳回成功
 	 */
-	Boolean rejectGoods(Long id);
+	Boolean rejectGoods(String id);
 
 }

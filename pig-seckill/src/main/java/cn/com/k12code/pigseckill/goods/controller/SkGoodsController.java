@@ -39,7 +39,7 @@ public class SkGoodsController {
 	 */
 	@GetMapping("/{id}")
 	@Operation(summary = "通过ID查询商品信息", description = "通过ID查询商品信息")
-	public R<SkGoods> getById(@PathVariable Long id) {
+	public R<SkGoods> getById(@PathVariable String id) {
 		return R.ok(skGoodsService.getGoodsById(id));
 	}
 
@@ -96,7 +96,7 @@ public class SkGoodsController {
 	 */
 	@DeleteMapping("/{id}")
 	@Operation(summary = "根据ID删除商品", description = "根据ID删除商品（逻辑删除）")
-	public R<Boolean> removeById(@PathVariable Long id) {
+	public R<Boolean> removeById(@PathVariable String id) {
 		return R.ok(skGoodsService.removeGoodsById(id));
 	}
 
@@ -107,7 +107,7 @@ public class SkGoodsController {
 	 */
 	@DeleteMapping("/batch")
 	@Operation(summary = "批量删除商品", description = "批量删除商品（逻辑删除）")
-	public R<Boolean> removeByIds(@RequestBody List<Long> ids) {
+	public R<Boolean> removeByIds(@RequestBody List<String> ids) {
 		return R.ok(skGoodsService.removeGoodsByIds(ids));
 	}
 
@@ -118,7 +118,7 @@ public class SkGoodsController {
 	 */
 	@PutMapping("/{id}/approve")
 	@Operation(summary = "审核通过商品", description = "审核通过商品，状态变为上架")
-	public R<Boolean> approveGoods(@PathVariable Long id) {
+	public R<Boolean> approveGoods(@PathVariable String id) {
 		return R.ok(skGoodsService.approveGoods(id));
 	}
 
@@ -129,7 +129,7 @@ public class SkGoodsController {
 	 */
 	@PutMapping("/{id}/reject")
 	@Operation(summary = "驳回商品", description = "驳回商品，状态变为驳回")
-	public R<Boolean> rejectGoods(@PathVariable Long id) {
+	public R<Boolean> rejectGoods(@PathVariable String id) {
 		return R.ok(skGoodsService.rejectGoods(id));
 	}
 

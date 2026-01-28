@@ -20,7 +20,7 @@ public class SkGoodsDTO {
 	 * 主键ID
 	 */
 	@Schema(description = "主键ID")
-	private Long id;
+	private String id;
 
 	/**
 	 * 商品名称
@@ -81,5 +81,11 @@ public class SkGoodsDTO {
 	 */
 	@Schema(description = "预约结束时间范围")
 	private LocalDateTime[] bookEndTime;
+
+	/**
+	 * 结束时间范围 [开始时间，结束时间]
+	 */
+	@Schema(description = "结束时间范围")
+	private LocalDateTime[] endTime;
 
 }

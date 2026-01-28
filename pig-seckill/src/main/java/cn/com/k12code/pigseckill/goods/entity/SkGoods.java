@@ -22,11 +22,11 @@ public class SkGoods implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 主键ID（自增主键）
+	 * 主键ID（雪花算法生成）
 	 */
-	@TableId(value = "id", type = IdType.AUTO)
+	@TableId(value = "id", type = IdType.ASSIGN_ID)
 	@Schema(description = "主键ID")
-	private Long id;
+	private String id;
 
 	/**
 	 * 创建时间
@@ -84,11 +84,6 @@ public class SkGoods implements Serializable {
 	@Schema(description = "可销售库存")
 	private Long saleableInventory;
 
-	/**
-	 * 幂等号
-	 */
-	@Schema(description = "幂等号")
-	private String identifier;
 
 	/**
 	 * 已占用库存
@@ -138,6 +133,12 @@ public class SkGoods implements Serializable {
 	 */
 	@Schema(description = "预约结束时间")
 	private LocalDateTime bookEndTime;
+
+	/**
+	 * 结束时间
+	 */
+	@Schema(description = "结束时间")
+	private LocalDateTime endTime;
 
 	/**
 	 * 是否可以预约
