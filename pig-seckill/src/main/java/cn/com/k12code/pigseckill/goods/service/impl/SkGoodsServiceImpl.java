@@ -1,5 +1,7 @@
 package cn.com.k12code.pigseckill.goods.service.impl;
 
+import cn.com.k12code.pigseckill.Inventory.dto.InventoryDTO;
+import cn.com.k12code.pigseckill.Inventory.service.InventoryService;
 import cn.com.k12code.pigseckill.goods.dto.SkGoodsDTO;
 import cn.com.k12code.pigseckill.goods.entity.SkGoods;
 import cn.com.k12code.pigseckill.goods.enums.GoodsStateEnum;
@@ -10,10 +12,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.AllArgsConstructor;
+import com.pig4cloud.pig.common.core.constant.CommonConstants;
+import com.pig4cloud.pig.common.core.util.R;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -23,8 +28,10 @@ import java.util.List;
  * @date 2025/01/23
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> implements SkGoodsService {
+
+	private final InventoryService inventoryService;
 
 	/**
 	 * 分页查询商品信息
@@ -65,7 +72,6 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 * @return 是否保存成功
 	 */
 	@Override
-	@Transactional(rollbackFor = Exception.class)
 	public Boolean saveGoods(SkGoods skGoods) {
 		return save(skGoods);
 	}
@@ -76,7 +82,6 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 * @return 是否更新成功
 	 */
 	@Override
-	@Transactional(rollbackFor = Exception.class)
 	public Boolean updateGoods(SkGoods skGoods) {
 		// 如果商品被驳回后再次修改，状态自动变为待审核
 		if (skGoods.getId() != null) {
@@ -94,7 +99,6 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 * @return 是否删除成功
 	 */
 	@Override
-	@Transactional(rollbackFor = Exception.class)
 	public Boolean removeGoodsById(String id) {
 		return removeById(id);
 	}
@@ -105,7 +109,6 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 * @return 是否删除成功
 	 */
 	@Override
-	@Transactional(rollbackFor = Exception.class)
 	public Boolean removeGoodsByIds(List<String> ids) {
 		return removeByIds(ids);
 	}
@@ -117,13 +120,20 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public Boolean approveGoods(String id) {
+	public R<?> approveGoods(String id) {
 		SkGoods goods = baseMapper.selectById(id);
 		if (goods == null) {
-			return false;
+			return R.failed("商品不存在");
+		}
+		// 先写缓存
+		R<?> init = inventoryService.init(new InventoryDTO(goods.getId(), goods.getClassId(), goods.getQuantity()));
+		if (CommonConstants.FAIL.equals(init.getCode())) {
+			return init;
 		}
 		goods.setState(GoodsStateEnum.ON_SALE.getCode());
-		return updateById(goods);
+		goods.setSyncChainTime(LocalDateTime.now());
+		boolean b = updateById(goods);
+		return b ? R.ok("审核成功") : R.failed("审核失败");
 	}
 
 	/**
@@ -132,7 +142,6 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 	 * @return 是否驳回成功
 	 */
 	@Override
-	@Transactional(rollbackFor = Exception.class)
 	public Boolean rejectGoods(String id) {
 		SkGoods goods = baseMapper.selectById(id);
 		if (goods == null) {

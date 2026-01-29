@@ -84,4 +84,9 @@ public interface CacheConstants {
 	 */
 	String ENCRYPT_KEY = "carlcarl12345678";
 
+	/**
+	 * 库存key前缀
+	 */
+	String INVENTORY_KEY = "goods:inventory:";
+
 }

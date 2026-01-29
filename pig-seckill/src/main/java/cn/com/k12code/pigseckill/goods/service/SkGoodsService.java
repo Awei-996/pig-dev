@@ -5,6 +5,7 @@ import cn.com.k12code.pigseckill.goods.entity.SkGoods;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pig4cloud.pig.common.core.util.R;
 
 import java.util.List;
 
@@ -71,7 +72,7 @@ public interface SkGoodsService extends IService<SkGoods> {
 	 * @param id 商品ID
 	 * @return 是否审核成功
 	 */
-	Boolean approveGoods(String id);
+	R<?> approveGoods(String id);
 
 	/**
 	 * 驳回商品

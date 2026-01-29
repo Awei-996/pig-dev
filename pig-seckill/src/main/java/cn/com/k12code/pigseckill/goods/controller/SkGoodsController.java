@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +24,10 @@ import java.util.List;
  * @date 2025/01/23
  */
 @RestController
-@AllArgsConstructor
 @RequestMapping("/goods")
 @Tag(description = "goods", name = "商品管理模块")
 @SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
+@RequiredArgsConstructor
 public class SkGoodsController {
 
 	private final SkGoodsService skGoodsService;
@@ -118,8 +118,8 @@ public class SkGoodsController {
 	 */
 	@PutMapping("/{id}/approve")
 	@Operation(summary = "审核通过商品", description = "审核通过商品，状态变为上架")
-	public R<Boolean> approveGoods(@PathVariable String id) {
-		return R.ok(skGoodsService.approveGoods(id));
+	public R<?> approveGoods(@PathVariable String id) {
+		return skGoodsService.approveGoods(id);
 	}
 
 	/**

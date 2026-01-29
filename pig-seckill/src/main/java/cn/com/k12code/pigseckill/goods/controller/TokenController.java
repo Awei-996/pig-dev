@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,10 +31,10 @@ import static com.pig4cloud.pig.common.core.constant.CacheConstants.*;
  * @date 2025/01/26
  */
 @RestController
-@AllArgsConstructor
 @RequestMapping("/goods/token")
 @Tag(description = "token", name = "商品防重提交Token")
 @SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
+@RequiredArgsConstructor
 public class TokenController {
 
 	private final SkGoodsService skGoodsService;
