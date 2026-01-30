@@ -8,5 +8,9 @@ import com.pig4cloud.pig.common.core.util.R;
  */
 public interface InventoryService {
 
-	R<?> init (InventoryDTO inventoryDTO);
+	R<?> init(InventoryDTO inventoryDTO);
+
+	R<?> decreaseInventory(InventoryDTO inventoryDTO);
+
+	R<?> increaseInventory(InventoryDTO inventoryDTO);
 }

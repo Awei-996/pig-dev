@@ -89,4 +89,9 @@ public interface CacheConstants {
 	 */
 	String INVENTORY_KEY = "goods:inventory:";
 
+	/**
+	 * 库存操作流水key前缀（用于防重、审计）
+	 */
+	String INVENTORY_STREAM_KEY = "goods:inventory:stream:";
+
 }

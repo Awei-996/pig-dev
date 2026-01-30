@@ -130,6 +130,7 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 		if (CommonConstants.FAIL.equals(init.getCode())) {
 			return init;
 		}
+		// 后更新数据库
 		goods.setState(GoodsStateEnum.ON_SALE.getCode());
 		goods.setSyncChainTime(LocalDateTime.now());
 		boolean b = updateById(goods);
