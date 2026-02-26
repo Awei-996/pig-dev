@@ -1,21 +1,31 @@
 package cn.com.k12code.pigseckill.goods.controller;
 
+import cn.com.k12code.pigseckill.goods.dto.BuyDTO;
 import cn.com.k12code.pigseckill.goods.dto.SkGoodsDTO;
 import cn.com.k12code.pigseckill.goods.entity.SkGoods;
 import cn.com.k12code.pigseckill.goods.service.SkGoodsService;
+import cn.com.k12code.pigseckill.order.request.OrderCreateAndConfirmRequest;
+import cn.com.k12code.pigseckill.order.validator.OrderCreateValidator;
+import cn.com.k12code.pigseckill.utils.SnowflakeIdGenerator;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static cn.com.k12code.pigseckill.common.interceptor.AntiRepeatSubmitInterceptor.TOKEN_THREAD_LOCAL;
 
 /**
  * 商品管理控制器
@@ -132,5 +142,39 @@ public class SkGoodsController {
 	public R<Boolean> rejectGoods(@PathVariable String id) {
 		return R.ok(skGoodsService.rejectGoods(id));
 	}
+	//-------------------------下单处理
 
-}
+	@Resource
+	private  OrderCreateValidator orderCreateChain;
+
+	/**
+	 * 秒杀下单
+	 */
+	@PostMapping("/buy")
+	public R<?> buy(@Valid @RequestBody BuyDTO buyDTO){
+		try {
+			OrderCreateAndConfirmRequest orderCreateAndConfirmRequest = getOrderCreateAndConfirmRequest(buyDTO);
+			orderCreateChain.validate(orderCreateAndConfirmRequest);
+		} catch (Exception e) {
+			return R.failed(e.getMessage());
+		}
+		return R.ok("");
+	}
+
+	private OrderCreateAndConfirmRequest getOrderCreateAndConfirmRequest(BuyDTO buyDTO) {
+		// 创建订单号
+		String orderId = SnowflakeIdGenerator.nextId(buyDTO.getGoodsType());
+		// 封装创建和确定订单
+		OrderCreateAndConfirmRequest orderCreateAndConfirmRequest = new OrderCreateAndConfirmRequest();
+		orderCreateAndConfirmRequest.setGoodsId(buyDTO.getGoodsId());
+		orderCreateAndConfirmRequest.setOrderId(orderId);
+		orderCreateAndConfirmRequest.setBuyerId(SecurityUtils.getUser().getId());
+		orderCreateAndConfirmRequest.setOperateTime(LocalDateTime.now());
+		orderCreateAndConfirmRequest.setItemCount(buyDTO.getItemCount());
+		orderCreateAndConfirmRequest.setItemPrice(buyDTO.getItemPrice());
+		orderCreateAndConfirmRequest.setOrderAmount(orderCreateAndConfirmRequest.getItemPrice().multiply(new BigDecimal(orderCreateAndConfirmRequest.getItemCount())));
+		orderCreateAndConfirmRequest.setIdentifier(TOKEN_THREAD_LOCAL.get());
+		return orderCreateAndConfirmRequest;
+	}
+
+	}

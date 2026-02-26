@@ -31,7 +31,17 @@ public enum GoodsStateEnum {
 	/**
 	 * 驳回
 	 */
-	REJECTED("REJECTED", "驳回");
+	REJECTED("REJECTED", "驳回"),
+
+	/**
+	 * 售完
+	 */
+	SOLD_OUT("SOLD_OUT","售完"),
+
+	/**
+	 * 冻结
+	 */
+	FREEZE("FREEZE","冻结");
 
 	/**
 	 * 状态码
