@@ -7,6 +7,10 @@ import cn.com.k12code.pigseckill.goods.entity.SkGoods;
 import cn.com.k12code.pigseckill.goods.enums.GoodsStateEnum;
 import cn.com.k12code.pigseckill.goods.mapper.SkGoodsMapper;
 import cn.com.k12code.pigseckill.goods.service.SkGoodsService;
+import cn.com.k12code.pigseckill.order.request.OrderCreateAndConfirmRequest;
+import cn.com.k12code.pigseckill.order.response.OrderResponse;
+import cn.com.k12code.pigseckill.order.service.SkGoodsOrderService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -14,12 +18,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.common.core.constant.CommonConstants;
 import com.pig4cloud.pig.common.core.util.R;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static cn.com.k12code.pigseckill.Inventory.support.InventoryScriptException.Reason.INVENTORY_IS_ZERO;
 
 /**
  * 商品服务实现类
@@ -126,7 +137,13 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 			return R.failed("商品不存在");
 		}
 		// 先写缓存
-		R<?> init = inventoryService.init(new InventoryDTO(goods.getId(), goods.getClassId(), goods.getQuantity()));
+
+		R<?> init = inventoryService.init(
+				new InventoryDTO()
+				.setGoodsId(goods.getId())
+				.setIdentifier(goods.getClassId())
+				.setInventory(goods.getQuantity())
+		);
 		if (CommonConstants.FAIL.equals(init.getCode())) {
 			return init;
 		}
@@ -150,6 +167,50 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 		}
 		goods.setState(GoodsStateEnum.REJECTED.getCode());
 		return updateById(goods);
+	}
+
+	//-------------- 购买商品
+
+	private Cache<String,Boolean> soldOutGoodsLocalCache;
+
+	private final SkGoodsOrderService skGoodsOrderService;
+
+	@PostConstruct
+	public void init() {
+		soldOutGoodsLocalCache = Caffeine.newBuilder()
+				.expireAfterWrite(1, TimeUnit.MINUTES)
+				.maximumSize(3000)
+				.build();
+	}
+
+	@Override
+	public R<?> buyGood(OrderCreateAndConfirmRequest orderCreateAndConfirmRequest) {
+		// 1.扣减redis
+		// 先通过本地缓存判断
+		if (soldOutGoodsLocalCache.getIfPresent(orderCreateAndConfirmRequest.getGoodsId()) == null) {
+			return R.failed("库存不足");
+		}
+
+		InventoryDTO inventoryDTO = new InventoryDTO()
+				.setGoodsId(orderCreateAndConfirmRequest.getGoodsId())
+				.setIdentifier(orderCreateAndConfirmRequest.getOrderId())
+				.setInventory(orderCreateAndConfirmRequest.getItemCount());
+		R<?> result = inventoryService.decreaseInventory(inventoryDTO);
+		// 如果库存为空，更新缓存
+		if (CommonConstants.FAIL.equals(result.getCode())) {
+			if (INVENTORY_IS_ZERO.equals(result.getData())) {
+				soldOutGoodsLocalCache.put(orderCreateAndConfirmRequest.getGoodsId(), Boolean.TRUE);
+			}
+			return R.failed("扣减库存失败");
+		}
+
+		// 2.创建订单
+//		orderCreateAndConfirmRequest.setSyncDecreaseInventory(false);
+		OrderResponse orderResponse = skGoodsOrderService.createAndConfirm(orderCreateAndConfirmRequest);
+		if (CommonConstants.FAIL.equals(orderResponse.getCode())) {
+			// 发送延迟消息
+		}
+		return orderResponse;
 	}
 
 	/**
@@ -248,7 +309,7 @@ public class SkGoodsServiceImpl extends ServiceImpl<SkGoodsMapper, SkGoods> impl
 		}
 
 		// 按创建时间倒序
-		wrapper.orderByDesc(SkGoods::getGmtCreate);
+		wrapper.orderByDesc(SkGoods::getCreateTime);
 
 		return wrapper;
 	}

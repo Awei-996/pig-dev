@@ -40,7 +40,7 @@ public class OrderCreateRequest extends BaseOrderRequest {
 	 * 商品数量
 	 */
 	@Min(value = 1)
-	private int itemCount;
+	private Long itemCount;
 
 	/**
 	 * 商品单价

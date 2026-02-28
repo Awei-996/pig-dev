@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class MessageBody {
+public class MessageBody{
 	/**
 	 * 幂等号
 	 */

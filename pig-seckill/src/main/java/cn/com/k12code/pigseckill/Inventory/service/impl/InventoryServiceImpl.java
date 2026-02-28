@@ -4,6 +4,7 @@ import cn.com.k12code.pigseckill.Inventory.dto.InventoryDTO;
 import cn.com.k12code.pigseckill.Inventory.service.InventoryService;
 import cn.com.k12code.pigseckill.Inventory.support.InventoryLuaScriptRunner;
 import cn.com.k12code.pigseckill.Inventory.support.InventoryScriptException;
+import com.pig4cloud.pig.common.core.constant.CommonConstants;
 import com.pig4cloud.pig.common.core.util.R;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
@@ -53,7 +54,7 @@ public class InventoryServiceImpl implements InventoryService {
 				case INVALID_VALUE -> "库存数据异常";
 				default -> e.getMessage();
 			};
-			return R.failed(msg);
+			return R.restResult(e.getReason(), CommonConstants.FAIL,msg);
 		}
 	}
 

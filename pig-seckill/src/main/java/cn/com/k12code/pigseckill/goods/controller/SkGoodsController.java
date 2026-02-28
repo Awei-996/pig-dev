@@ -6,7 +6,9 @@ import cn.com.k12code.pigseckill.goods.entity.SkGoods;
 import cn.com.k12code.pigseckill.goods.service.SkGoodsService;
 import cn.com.k12code.pigseckill.order.request.OrderCreateAndConfirmRequest;
 import cn.com.k12code.pigseckill.order.validator.OrderCreateValidator;
+import cn.com.k12code.pigseckill.streammq.producer.StreamProducer;
 import cn.com.k12code.pigseckill.utils.SnowflakeIdGenerator;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static cn.com.k12code.pigseckill.common.interceptor.AntiRepeatSubmitInterceptor.TOKEN_THREAD_LOCAL;
+import static cn.com.k12code.pigseckill.streammq.constant.ChannelConstants.BUY_CHANNEL;
 
 /**
  * 商品管理控制器
@@ -147,6 +150,8 @@ public class SkGoodsController {
 	@Resource
 	private  OrderCreateValidator orderCreateChain;
 
+	private final StreamProducer streamProducer;
+
 	/**
 	 * 秒杀下单
 	 */
@@ -155,6 +160,14 @@ public class SkGoodsController {
 		try {
 			OrderCreateAndConfirmRequest orderCreateAndConfirmRequest = getOrderCreateAndConfirmRequest(buyDTO);
 			orderCreateChain.validate(orderCreateAndConfirmRequest);
+			// 发送消息
+			boolean b = streamProducer.sendMessage(BUY_CHANNEL, buyDTO.getGoodsType().getCode(), JSON.toJSONString(orderCreateAndConfirmRequest));
+
+			if (!b) {
+				throw new RuntimeException("下单失败");
+			}
+			// 验证订单是否创建是否成功
+
 		} catch (Exception e) {
 			return R.failed(e.getMessage());
 		}

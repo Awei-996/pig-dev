@@ -31,7 +31,7 @@ public class StreamProducer {
 	 * @param message 消息
 	 * @return 状态
 	 */
-	private boolean sendMessage(String bingingName,String tag,String message){
+	public boolean sendMessage(String bingingName,String tag,String message){
 
 		logger.info("send message : {} , {} , {}", bingingName, tag, JSON.toJSONString(message));
 

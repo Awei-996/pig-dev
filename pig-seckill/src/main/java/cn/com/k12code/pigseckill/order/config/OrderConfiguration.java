@@ -6,6 +6,7 @@ import cn.com.k12code.pigseckill.order.validator.impl.UserValidator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 
 /**
@@ -28,6 +29,7 @@ public class OrderConfiguration {
 		return new GoodsValidator();
 	}
 
+	@Primary
 	@Bean
 	public OrderCreateValidator orderValidatorChain(UserValidator userValidator, GoodsValidator goodsValidator) {
 		userValidator.setNext(goodsValidator);

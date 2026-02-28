@@ -19,6 +19,8 @@ spring:
           destination: buy-topic
           binder: rocketmq
       rocketmq:
+        binder:
+          name-server: 192.168.88.13:9876
         bindings:
           buy-out-0:
             producer:

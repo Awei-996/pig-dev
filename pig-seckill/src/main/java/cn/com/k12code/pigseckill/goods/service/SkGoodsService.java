@@ -2,6 +2,7 @@ package cn.com.k12code.pigseckill.goods.service;
 
 import cn.com.k12code.pigseckill.goods.dto.SkGoodsDTO;
 import cn.com.k12code.pigseckill.goods.entity.SkGoods;
+import cn.com.k12code.pigseckill.order.request.OrderCreateAndConfirmRequest;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -81,4 +82,10 @@ public interface SkGoodsService extends IService<SkGoods> {
 	 */
 	Boolean rejectGoods(String id);
 
+	/**
+	 * 购买商品
+	 * @param orderCreateAndConfirmRequest 购买信息
+	 * @return 返回是否购买陈功
+	 */
+	R<?> buyGood(OrderCreateAndConfirmRequest orderCreateAndConfirmRequest);
 }

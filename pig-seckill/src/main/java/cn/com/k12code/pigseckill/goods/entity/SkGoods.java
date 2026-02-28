@@ -1,6 +1,7 @@
 package cn.com.k12code.pigseckill.goods.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.pig4cloud.pig.common.mybatis.base.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @Data
 @TableName("sk_goods")
 @Schema(description = "商品")
-public class SkGoods implements Serializable {
+public class SkGoods extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,20 +28,6 @@ public class SkGoods implements Serializable {
 	@TableId(value = "id", type = IdType.ASSIGN_ID)
 	@Schema(description = "主键ID")
 	private String id;
-
-	/**
-	 * 创建时间
-	 */
-	@TableField(value = "gmt_create", fill = FieldFill.INSERT)
-	@Schema(description = "创建时间")
-	private LocalDateTime gmtCreate;
-
-	/**
-	 * 最后更新时间
-	 */
-	@TableField(value = "gmt_modified", fill = FieldFill.INSERT_UPDATE)
-	@Schema(description = "最后更新时间")
-	private LocalDateTime gmtModified;
 
 	/**
 	 * 商品名称
@@ -108,7 +95,7 @@ public class SkGoods implements Serializable {
 	 * 商品创建时间
 	 */
 	@Schema(description = "商品创建时间")
-	private LocalDateTime createTime;
+	private LocalDateTime goodCreateTime;
 
 	/**
 	 * 商品发售时间
