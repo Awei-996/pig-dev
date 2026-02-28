@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * 基于 Snowflake 的分布式 ID 生成器。
  * <p>
- * workerId 优先从 {@link WorkerIdHolder} 获取（Redis 按服务名原子自增分配 0~31）；
+ * workerId 优先从 {@link WorkerIdHolder} 获取（Redis 租约式槽位分配 0~31，带心跳续期与停机释放）；
  * 若 Redis 未分配成功，则从配置 {@code snowflake.worker-id} 或环境变量/系统属性读取。
  * <p>
  * 使用方式：多实例部署时依赖 WorkerIdHolder 自动分配；单机或测试可配置 snowflake.worker-id 或环境变量。
@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class SnowflakeIdGenerator {
 
 	private static final Logger log = LoggerFactory.getLogger(SnowflakeIdGenerator.class);
-	/** Snowflake 协议中 workerId 占 5 位，取值范围 0~31 */
 	private static final int MAX_WORKER_ID = 31;
 	private static final long DATACENTER_ID = 0L;
 
